@@ -5,9 +5,15 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @UniqueEntity(
+ *  fields={"email"},
+ *  message= "L'email que vous avez indiqué est déjà utilisé."
+ * )
  */
 class User implements UserInterface
 {
@@ -20,19 +26,21 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @
      */
     private $email;
 
     /**
-     * @ORM\Column(type="json")
-     */
-    private $roles = [];
-
-    /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * @Assert\Length(min="8", minMessage="Votre mot de passe doit faire minimum 8 caractères")
      */
     private $password;
+
+    /**
+     * @Assert\EqualTo(propertyPath="password", message="Votre mot de passe ne correspond pas.")
+     */
+    public $confirm_password;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -69,25 +77,6 @@ class User implements UserInterface
     public function getUsername(): string
     {
         return (string) $this->email;
-    }
-
-    /**
-     * @see UserInterface
-     */
-    public function getRoles(): array
-    {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
-    }
-
-    public function setRoles(array $roles): self
-    {
-        $this->roles = $roles;
-
-        return $this;
     }
 
     /**
@@ -140,4 +129,9 @@ class User implements UserInterface
 
         return $this;
     }
+
+    public function getRoles() {
+        return ['ROLE_USER'];
+    }
 }
+
