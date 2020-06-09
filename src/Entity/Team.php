@@ -40,7 +40,7 @@ class Team
     private $outside_team;
 
     /**
-     * @ORM\ManyToOne(targetEntity=city::class, inversedBy="teams")
+     * @ORM\ManyToOne(targetEntity=City::class, inversedBy="teams")
      * @ORM\JoinColumn(nullable=false)
      */
     private $city;
@@ -55,12 +55,24 @@ class Team
      */
     private $accepting_team;
 
+    /**
+     * @ORM\OneToOne(targetEntity=User::class, cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $Team_lead;
+
+    /**
+     * @ORM\OneToMany(targetEntity=User::class, mappedBy="team")
+     */
+    private $User;
+
     public function __construct()
     {
         $this->home_team = new ArrayCollection();
         $this->outside_team = new ArrayCollection();
         $this->team_asking = new ArrayCollection();
         $this->accepting_team = new ArrayCollection();
+        $this->User = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -222,6 +234,49 @@ class Team
             // set the owning side to null (unless already changed)
             if ($acceptingTeam->getAcceptingTeam() === $this) {
                 $acceptingTeam->setAcceptingTeam(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getTeamLead(): ?user
+    {
+        return $this->Team_lead;
+    }
+
+    public function setTeamLead(user $Team_lead): self
+    {
+        $this->Team_lead = $Team_lead;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUser(): Collection
+    {
+        return $this->User;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->User->contains($user)) {
+            $this->User[] = $user;
+            $user->setTeam($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->User->contains($user)) {
+            $this->User->removeElement($user);
+            // set the owning side to null (unless already changed)
+            if ($user->getTeam() === $this) {
+                $user->setTeam(null);
             }
         }
 

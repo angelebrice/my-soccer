@@ -52,6 +52,11 @@ class User implements UserInterface
      */
     private $picture;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Team::class, inversedBy="User")
+     */
+    private $team;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -132,6 +137,18 @@ class User implements UserInterface
 
     public function getRoles() {
         return ['ROLE_USER'];
+    }
+
+    public function getTeam(): ?Team
+    {
+        return $this->team;
+    }
+
+    public function setTeam(?Team $team): self
+    {
+        $this->team = $team;
+
+        return $this;
     }
 }
 

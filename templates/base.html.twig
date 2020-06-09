@@ -14,7 +14,7 @@
                 <ul class="navbar-nav mr-auto">
                     {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Mon équipe</a>
+                        <a class="nav-link" href="{{ path('team_new') }}">Mon équipe</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/ranking">Classement</a>
