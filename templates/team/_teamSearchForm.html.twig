@@ -1,0 +1,8 @@
+{% form_theme formSearchTeam 'bootstrap_4_layout.html.twig' %}
+
+
+{{ form_start(formSearchTeam) }}
+    {{ form_widget(formSearchTeam) }}
+    <button class="btn btn-primary">{{ button_label|default('Rechercher') }}</button>
+    
+{{ form_end(formSearchTeam) }}

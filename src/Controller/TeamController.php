@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Team;
+use App\Form\SearchTeamType;
 use App\Form\TeamType;
 use App\Repository\TeamRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/team")
+ * @Route("/equipe")
  */
 class TeamController extends AbstractController
 {
@@ -28,13 +29,19 @@ class TeamController extends AbstractController
     /**
      * @Route("/new", name="team_new", methods={"GET","POST"})
      */
-    public function new(Request $request): Response
+    public function new(Team $team = null, TeamRepository $repo, Request $request): Response
     {
-        $team = new Team();
-        $form = $this->createForm(TeamType::class, $team);
-        $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        //$user = $this->getUser();
+        //$user->getTea
+
+        $formCreateTeam = $this->createForm(TeamType::class, $team);
+        $formCreateTeam->handleRequest($request);
+
+        $formSearchTeam = $this->createForm(SearchTeamType::class, $team);
+        $formSearchTeam->handleRequest($request);
+
+        if ($formCreateTeam->isSubmitted() && $formCreateTeam->isValid()) {
 
             $team->setTeamLead($this->getUser());
 
@@ -45,9 +52,20 @@ class TeamController extends AbstractController
             return $this->redirectToRoute('team_index');
         }
 
+        if($formSearchTeam->isSubmitted() && $formSearchTeam->isValid()) {
+            $option = $formSearchTeam->getData();
+
+            $teamSearch = $repo->searchTeam($option);
+
+            return $this->render('search-team.html.team', [
+                'teamList' => $repo
+            ]);
+        }
+
         return $this->render('team/new.html.twig', [
             'team' => $team,
-            'form' => $form->createView(),
+            'formCreateTeam' => $formCreateTeam->createView(),
+            'formSearchTeam' => $formSearchTeam->createView()
         ]);
     }
 

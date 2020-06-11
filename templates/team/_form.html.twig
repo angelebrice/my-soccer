@@ -1,4 +1,6 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
+{% form_theme formCreateTeam 'bootstrap_4_layout.html.twig' %}
+
+{{ form_start(formCreateTeam) }}
+    {{ form_widget(formCreateTeam) }}
     <button class="btn btn-primary">{{ button_label|default('Enregistrer l\'équipe') }}</button>
-{{ form_end(form) }}
+{{ form_end(formCreateTeam) }}
