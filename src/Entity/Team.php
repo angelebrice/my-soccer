@@ -6,6 +6,8 @@ use App\Repository\TeamRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinColumn;
+
 
 /**
  * @ORM\Entity(repositoryClass=TeamRepository::class)
@@ -56,15 +58,16 @@ class Team
     private $accepting_team;
 
     /**
-     * @ORM\OneToOne(targetEntity=User::class, cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\OneToOne(targetEntity=User::class, mappedBy="team_lead",cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
-    private $Team_lead;
+    private $user_lead;
 
     /**
      * @ORM\OneToMany(targetEntity=User::class, mappedBy="team")
+     * @JoinColumn(onDelete="CASCADE")
      */
-    private $User;
+    private $users;
 
     public function __construct()
     {
@@ -72,7 +75,7 @@ class Team
         $this->outside_team = new ArrayCollection();
         $this->team_asking = new ArrayCollection();
         $this->accepting_team = new ArrayCollection();
-        $this->User = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -242,12 +245,13 @@ class Team
 
     public function getTeamLead(): ?user
     {
-        return $this->Team_lead;
+        return $this->user_lead;
     }
 
-    public function setTeamLead(user $Team_lead): self
+    public function setTeamLead(user $user_lead): self
     {
-        $this->Team_lead = $Team_lead;
+        $this->user_lead = $user_lead;
+        $this->user_lead->setTeamLead($this);
 
         return $this;
     }
@@ -257,26 +261,26 @@ class Team
      */
     public function getUser(): Collection
     {
-        return $this->User;
+        return $this->users;
     }
 
-    public function addUser(User $user): self
+    public function addUser(User $users): self
     {
-        if (!$this->User->contains($user)) {
-            $this->User[] = $user;
-            $user->setTeam($this);
+        if (!$this->users->contains($users)) {
+            $this->users[] = $users;
+            $users->setTeam($this);
         }
 
         return $this;
     }
 
-    public function removeUser(User $user): self
+    public function removeUser(User $users): self
     {
-        if ($this->User->contains($user)) {
-            $this->User->removeElement($user);
+        if ($this->users->contains($users)) {
+            $this->users->removeElement($users);
             // set the owning side to null (unless already changed)
-            if ($user->getTeam() === $this) {
-                $user->setTeam(null);
+            if ($users->getTeam() === $this) {
+                $users->setTeam(null);
             }
         }
 

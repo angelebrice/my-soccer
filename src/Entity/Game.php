@@ -35,13 +35,13 @@ class Game
     private $tchats;
 
     /**
-     * @ORM\ManyToOne(targetEntity=team::class, inversedBy="games")
+     * @ORM\ManyToOne(targetEntity=Team::class, inversedBy="home_team")
      * @ORM\JoinColumn(nullable=false)
      */
     private $home_team;
 
     /**
-     * @ORM\ManyToOne(targetEntity=team::class, inversedBy="outside_team")
+     * @ORM\ManyToOne(targetEntity=Team::class, inversedBy="outside_team")
      * @ORM\JoinColumn(nullable=false)
      */
     private $outside_team;

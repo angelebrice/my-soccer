@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\JoinColumn;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -52,8 +54,15 @@ class User implements UserInterface
      */
     private $picture;
 
+
     /**
-     * @ORM\ManyToOne(targetEntity=Team::class, inversedBy="User")
+     * @OneToOne(targetEntity="Team", inversedBy="user_lead")
+     * @JoinColumn(name="teamlead_id", referencedColumnName="id")
+     */
+    private $team_lead;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Team::class, inversedBy="users")
      */
     private $team;
 
@@ -150,5 +159,16 @@ class User implements UserInterface
 
         return $this;
     }
-}
 
+    public function getTeamLead(): ?Team
+    {
+        return $this->team_lead;
+    }
+
+    public function setTeamLead(?Team $team_lead): self
+    {
+        $this->team_lead = $team_lead;
+
+        return $this;
+    }
+}

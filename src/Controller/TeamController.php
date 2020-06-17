@@ -32,13 +32,21 @@ class TeamController extends AbstractController
     public function new(Team $team = null, TeamRepository $repo, Request $request): Response
     {
 
-        //$user = $this->getUser();
-        //$user->getTea
+        $user = $this->getUser();
+        
+        if($user->getTeam()) {
+            return $this->redirectToRoute('team_show', ["id" => $user->getTeam()->getId()]);
+        }elseif($user->getTeamLead()) {
+            return $this->redirectToRoute('team_show', ["id" => $user->getTeamLead()->getId()]);
+        }
+
+        $team = new Team();
+        $searchTeam = new Team();
 
         $formCreateTeam = $this->createForm(TeamType::class, $team);
         $formCreateTeam->handleRequest($request);
 
-        $formSearchTeam = $this->createForm(SearchTeamType::class, $team);
+        $formSearchTeam = $this->createForm(SearchTeamType::class, $searchTeam);
         $formSearchTeam->handleRequest($request);
 
         if ($formCreateTeam->isSubmitted() && $formCreateTeam->isValid()) {
@@ -64,6 +72,7 @@ class TeamController extends AbstractController
 
         return $this->render('team/new.html.twig', [
             'team' => $team,
+            'searchTeam' => $searchTeam,
             'formCreateTeam' => $formCreateTeam->createView(),
             'formSearchTeam' => $formSearchTeam->createView()
         ]);
