@@ -1,12 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% form_theme form 'bootstrap_4_layout.html.twig' %}
+
 
 {% block title %}New Team{% endblock %}
 
 {% block body %}
-    <h1>Create new Team</h1>
+    <h1>Mon équipe</h1>
+
+    <h2 class="mt-5">Création d'équipe : </h2>
 
     {{ include('team/_form.html.twig') }}
+
+    <a href="{{ path('search') }}" class="btn btn-primary mt-4">Recherche d'équipe</a>
+
 
 {% endblock %}

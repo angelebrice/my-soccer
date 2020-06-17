@@ -29,27 +29,22 @@ class TeamController extends AbstractController
     /**
      * @Route("/new", name="team_new", methods={"GET","POST"})
      */
-    public function new(Team $team = null, TeamRepository $repo, Request $request): Response
+    public function new(Request $request): Response
     {
 
         $user = $this->getUser();
-        
+
         if($user->getTeam()) {
             return $this->redirectToRoute('team_show', ["id" => $user->getTeam()->getId()]);
         }elseif($user->getTeamLead()) {
             return $this->redirectToRoute('team_show', ["id" => $user->getTeamLead()->getId()]);
         }
-
+        
         $team = new Team();
-        $searchTeam = new Team();
+        $form = $this->createForm(TeamType::class, $team);
+        $form->handleRequest($request);
 
-        $formCreateTeam = $this->createForm(TeamType::class, $team);
-        $formCreateTeam->handleRequest($request);
-
-        $formSearchTeam = $this->createForm(SearchTeamType::class, $searchTeam);
-        $formSearchTeam->handleRequest($request);
-
-        if ($formCreateTeam->isSubmitted() && $formCreateTeam->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
 
             $team->setTeamLead($this->getUser());
 
@@ -57,26 +52,15 @@ class TeamController extends AbstractController
             $entityManager->persist($team);
             $entityManager->flush();
 
-            return $this->redirectToRoute('team_index');
-        }
-
-        if($formSearchTeam->isSubmitted() && $formSearchTeam->isValid()) {
-            $option = $formSearchTeam->getData();
-
-            $teamSearch = $repo->searchTeam($option);
-
-            return $this->render('search-team.html.team', [
-                'teamList' => $repo
-            ]);
+            return $this->redirectToRoute('team_show', ['id' => $team->getId()]);
         }
 
         return $this->render('team/new.html.twig', [
             'team' => $team,
-            'searchTeam' => $searchTeam,
-            'formCreateTeam' => $formCreateTeam->createView(),
-            'formSearchTeam' => $formSearchTeam->createView()
+            'formCreateTeam' => $form->createView(),
         ]);
     }
+
 
     /**
      * @Route("/{id}", name="team_show", methods={"GET"})

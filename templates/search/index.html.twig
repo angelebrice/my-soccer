@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div>
+    <h1>Recherche D'équipe :</h1>
+
+    {{ include('search/_teamSearchForm.html.twig') }}
+</div>
+{% if app.request.method == 'POST' %}
+<div class="mt-5">
+    {% if teams | length > 0 %}
+    <h2>Résultats de la recherche</h2>
+
+    {% for team in teams %}
+
+    <div class="d-flex">
+        <a href="{{ path('team_show', {id: team.id}) }}">{{ team.name }}</a>
+    </div>
+
+    {% endfor %}
+    {% else %}
+
+    <p>Aucun résultat pour votre recherche</p>
+
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

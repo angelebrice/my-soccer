@@ -22,7 +22,7 @@ class Team
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      */
     private $name;
 
@@ -58,14 +58,13 @@ class Team
     private $accepting_team;
 
     /**
-     * @ORM\OneToOne(targetEntity=User::class, mappedBy="team_lead",cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
+     * @ORM\OneToOne(targetEntity=User::class, mappedBy="team_lead")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $user_lead;
 
     /**
      * @ORM\OneToMany(targetEntity=User::class, mappedBy="team")
-     * @JoinColumn(onDelete="CASCADE")
      */
     private $users;
 
